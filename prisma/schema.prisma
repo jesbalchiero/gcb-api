@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo para filmes
+model Movie {
+  id             Int       @id @default(autoincrement())
+  title          String    // Titulo original
+  overview       String?   // Sinopse
+  rating         Float?    // Avaliação geral
+  duration       Int?      // Tempo de duração em minutos
+  releaseYear    Int?      // Ano de lançamento
+  language       String?   // Linguagem original do filme
+
+  // Relacionamento com categorias
+  categories     Category[]
+
+  // Relacionamento com atores
+  actors         Actor[]
+
+  // Data de criação e última atualização
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// Modelo para categorias
+model Category {
+  id             Int       @id @default(autoincrement())
+  name           String    @unique
+  
+  // Relacionamento com filmes
+  movies         Movie[]   
+}
+
+// Modelo para atores
+model Actor {
+  id             Int       @id @default(autoincrement())
+  name           String
+  
+  // Relacionamento com filmes
+  movies         Movie[]   
+}
