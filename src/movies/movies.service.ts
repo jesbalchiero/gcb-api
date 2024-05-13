@@ -43,8 +43,33 @@ export class MoviesService {
     return `This action returns a #${id} movie`;
   }
 
-  update(id: number, movieDto: MovieDto) {
-    return `This action updates a #${id} movie`;
+  async update(id: number, movieDto: MovieDto) {
+    // Mapear os dados do CreateMovieDto para o formato esperado pelo Prisma
+    const data = {
+      id: id,
+      title: movieDto.title,
+      overview: movieDto.overview,
+      rating: movieDto.rating,
+      duration: movieDto.duration,
+      releaseYear: movieDto.releaseYear,
+      language: movieDto.language,
+      categories: {
+        connect: movieDto.categories.map((category) => ({ id: category.id })),
+      },
+      actors: {
+        connect: movieDto.actors.map((actor) => ({ id: actor.id })),
+      },
+      createdAt: movieDto.createdAt,
+      updatedAt: movieDto.updatedAt,
+    };
+
+    // Criar o filme usando o Prisma
+    try {
+      const movie = await this.prisma.movie.update({ where: { id }, data });
+      return movie;
+    } catch (e) {
+      throw new ExceptionsHandler(e);
+    }
   }
 
   remove(id: number) {
